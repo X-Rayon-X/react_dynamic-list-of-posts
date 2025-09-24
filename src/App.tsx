@@ -40,17 +40,13 @@ export const App = () => {
     usersService.getUsers().then(usersAPI => setUsers(usersAPI));
   }
 
-  function loadPosts() {
+  function loadPosts(userId: number) {
     setLoaderPost('loading');
 
     postsService
-      .getPosts()
+      .getPosts(userId)
       .then(postsAPI => {
-        const currentPostOfUser = postsAPI.filter(
-          postAPI => postAPI.userId === selectedUser?.id,
-        );
-
-        setPosts(currentPostOfUser);
+        setPosts(postsAPI);
         setErrorMessagePost(null);
       })
       .catch(() => setErrorMessagePost('Something went wrong!'))
@@ -103,12 +99,16 @@ export const App = () => {
   useEffect(loadUsers, []);
   useEffect(() => {
     if (selectedUser) {
-      loadPosts();
+      loadPosts(selectedUser.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(loadComments, [isOpenPost]);
+  useEffect(() => {
+    if (isOpenPost) {
+      loadComments();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpenPost]);
 
   const showNoPosts =
     !errorMessagePost &&
