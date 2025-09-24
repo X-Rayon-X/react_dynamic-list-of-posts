@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 import classNames from 'classnames';
 
 import 'bulma/css/bulma.css';
@@ -10,17 +11,30 @@ import { UserSelector } from './components/UserSelector';
 import { Loader } from './components/Loader';
 import * as usersService from './api/users';
 import * as postsService from './api/posts';
+import * as commentsService from './api/comments';
 import { useEffect, useState } from 'react';
 import { User } from './types/User';
 import { Post } from './types/Post';
 import { LoaderState } from './types/LoaderState';
+import { Comment } from './types/Comment';
 
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
   const [loaderPost, setLoaderPost] = useState<LoaderState>('initial');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loaderComment, setLoaderComment] = useState<LoaderState>('initial');
+
+  const [errorMessagePost, setErrorMessagePost] = useState<string | null>(null);
+  const [errorMessageComment, setErrorMessageComment] = useState<string | null>(
+    null,
+  );
+
+  const [isOpenPost, setIsOpenPost] = useState(false);
 
   function loadUsers() {
     usersService.getUsers().then(usersAPI => setUsers(usersAPI));
@@ -37,19 +51,67 @@ export const App = () => {
         );
 
         setPosts(currentPostOfUser);
-        setErrorMessage(null);
+        setErrorMessagePost(null);
       })
-      .catch(() => setErrorMessage('Something went wrong!'))
+      .catch(() => setErrorMessagePost('Something went wrong!'))
       .finally(() => {
         setLoaderPost('loaded');
       });
   }
 
+  function loadComments() {
+    setLoaderComment('loading');
+
+    commentsService
+      .getComments()
+      .then(commentsAPI => {
+        const currentCommentOfPost = commentsAPI.filter(
+          commentAPI => commentAPI.postId === selectedPost?.id,
+        );
+
+        setComments(currentCommentOfPost);
+        setErrorMessageComment(null);
+      })
+      .catch(() => setErrorMessageComment('Something went wrong'))
+      .finally(() => {
+        setLoaderComment('loaded');
+      });
+  }
+
+  function addComment({ postId, name, email, body }: Omit<Comment, 'id'>) {
+    return commentsService
+      .addComment({ postId, name, email, body })
+      .then(newComment => {
+        setComments(currentComments => [...currentComments, newComment]);
+      })
+      .catch(() => {})
+      .finally(() => {});
+  }
+
+  function deleteComment(commentId: number) {
+    return commentsService
+      .deleteComment(commentId)
+      .then(() => {
+        setComments(currentComments =>
+          currentComments.filter(comment => comment.id !== commentId),
+        );
+      })
+      .catch(() => {})
+      .finally(() => {});
+  }
+
   useEffect(loadUsers, []);
-  useEffect(loadPosts, [selectedUser]);
+  useEffect(() => {
+    if (selectedUser) {
+      loadPosts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUser]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(loadComments, [isOpenPost]);
 
   const showNoPosts =
-    !errorMessage &&
+    !errorMessagePost &&
     loaderPost === 'loaded' &&
     posts.length === 0 &&
     selectedUser;
@@ -75,12 +137,12 @@ export const App = () => {
 
                 {loaderPost === 'loading' && <Loader />}
 
-                {errorMessage && loaderPost === 'loaded' && (
+                {errorMessagePost && loaderPost === 'loaded' && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
                   >
-                    {errorMessage}
+                    {errorMessagePost}
                   </div>
                 )}
 
@@ -90,9 +152,16 @@ export const App = () => {
                   </div>
                 )}
 
-                {!errorMessage && !loaderPost && posts.length > 0 && (
-                  <PostsList posts={posts} />
-                )}
+                {!errorMessagePost &&
+                  loaderPost === 'loaded' &&
+                  posts.length > 0 && (
+                    <PostsList
+                      posts={posts}
+                      isOpenPost={isOpenPost}
+                      setIsOpenPost={setIsOpenPost}
+                      setSelectedPost={setSelectedPost}
+                    />
+                  )}
               </div>
             </div>
           </div>
@@ -104,11 +173,21 @@ export const App = () => {
               'is-parent',
               'is-8-desktop',
               'Sidebar',
-              'Sidebar--open',
+              { 'Sidebar--open': isOpenPost },
             )}
           >
             <div className="tile is-child box is-success ">
-              <PostDetails />
+              {isOpenPost && (
+                <PostDetails
+                  posts={posts}
+                  comments={comments}
+                  loaderComment={loaderComment}
+                  errorMessageComment={errorMessageComment}
+                  onSubmit={addComment}
+                  selectedPost={selectedPost}
+                  deleteComment={deleteComment}
+                />
+              )}
             </div>
           </div>
         </div>

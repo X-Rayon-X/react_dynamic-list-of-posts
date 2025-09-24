@@ -1,11 +1,25 @@
 import React from 'react';
 import { Post } from '../types/Post';
+import classNames from 'classnames';
 
 interface Props {
   post: Post;
+  isOpenPost: boolean;
+  setIsOpenPost: (value: boolean) => void;
+  setSelectedPost: (post: Post) => void;
 }
 
-export const PostItem: React.FC<Props> = ({ post }) => {
+export const PostItem: React.FC<Props> = ({
+  post,
+  isOpenPost,
+  setIsOpenPost,
+  setSelectedPost,
+}) => {
+  function handleSelect(postTake: Post) {
+    setSelectedPost(postTake);
+    setIsOpenPost(!isOpenPost);
+  }
+
   return (
     <tbody>
       <tr data-cy="Post">
@@ -17,9 +31,12 @@ export const PostItem: React.FC<Props> = ({ post }) => {
           <button
             type="button"
             data-cy="PostButton"
-            className="button is-link is-light"
+            className={classNames('button is-link', {
+              'is-light': !isOpenPost,
+            })}
+            onClick={() => handleSelect(post)}
           >
-            Open
+            {isOpenPost ? 'Close' : 'Open'}
           </button>
         </td>
       </tr>

@@ -4,9 +4,17 @@ import { PostItem } from './PostItem';
 
 interface Props {
   posts: Post[];
+  isOpenPost: boolean;
+  setIsOpenPost: (value: boolean) => void;
+  setSelectedPost: (post: Post) => void;
 }
 
-export const PostsList: React.FC<Props> = ({ posts }) => (
+export const PostsList: React.FC<Props> = ({
+  posts,
+  isOpenPost,
+  setIsOpenPost,
+  setSelectedPost,
+}) => (
   <div data-cy="PostsList">
     <p className="title">Posts:</p>
 
@@ -21,7 +29,13 @@ export const PostsList: React.FC<Props> = ({ posts }) => (
       </thead>
 
       {posts.map(post => (
-        <PostItem post={post} key={post.id} />
+        <PostItem
+          post={post}
+          isOpenPost={isOpenPost}
+          setIsOpenPost={setIsOpenPost}
+          setSelectedPost={setSelectedPost}
+          key={post.id}
+        />
       ))}
     </table>
   </div>
