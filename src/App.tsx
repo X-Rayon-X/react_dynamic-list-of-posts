@@ -10,13 +10,13 @@ import { PostDetails } from './components/PostDetails';
 import { UserSelector } from './components/UserSelector';
 import { Loader } from './components/Loader';
 import * as usersService from './api/users';
-import * as postsService from './api/posts';
 import * as commentsService from './api/comments';
 import { useEffect, useState } from 'react';
 import { User } from './types/User';
 import { Post } from './types/Post';
 import { LoaderState } from './types/LoaderState';
 import { Comment } from './types/Comment';
+import { client } from './utils/fetchClient';
 
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -42,9 +42,8 @@ export const App = () => {
 
   function loadPosts(userId: number) {
     setLoaderPost('loading');
-
-    postsService
-      .getPosts(userId)
+    client
+      .get<Post[]>(`/posts?userId=${userId}`)
       .then(postsAPI => {
         setPosts(postsAPI);
         setErrorMessagePost(null);
@@ -55,17 +54,13 @@ export const App = () => {
       });
   }
 
-  function loadComments() {
+  function loadComments(postId: number) {
     setLoaderComment('loading');
 
-    commentsService
-      .getComments()
+    client
+      .get<Comment[]>(`/comments?postId=${postId}`)
       .then(commentsAPI => {
-        const currentCommentOfPost = commentsAPI.filter(
-          commentAPI => commentAPI.postId === selectedPost?.id,
-        );
-
-        setComments(currentCommentOfPost);
+        setComments(commentsAPI);
         setErrorMessageComment(null);
       })
       .catch(() => setErrorMessageComment('Something went wrong'))
@@ -104,11 +99,11 @@ export const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser]);
   useEffect(() => {
-    if (isOpenPost) {
-      loadComments();
+    if (selectedPost) {
+      loadComments(selectedPost.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpenPost]);
+  }, [selectedPost]);
 
   const showNoPosts =
     !errorMessagePost &&
