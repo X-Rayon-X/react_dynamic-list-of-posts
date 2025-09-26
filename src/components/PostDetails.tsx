@@ -6,7 +6,6 @@ import { LoaderState } from '../types/LoaderState';
 import { Comment } from '../types/Comment';
 
 interface Props {
-  posts: Post[];
   comments: Comment[];
   loaderComment: LoaderState;
   errorMessageComment: string | null;
@@ -21,7 +20,6 @@ interface Props {
 }
 
 export const PostDetails: React.FC<Props> = ({
-  posts,
   comments,
   loaderComment,
   errorMessageComment,
@@ -34,18 +32,18 @@ export const PostDetails: React.FC<Props> = ({
   return (
     <div className="content" data-cy="PostDetails">
       <div className="content" data-cy="PostDetails">
-        {posts.map(post => (
+        {selectedPost && (
           <PostDetailsItem
-            post={post}
+            selectedPost={selectedPost}
             comments={comments}
             loaderComment={loaderComment}
             errorMessageComment={errorMessageComment}
             isOpenComment={isOpenComment}
             setIsOpenComment={setIsOpenComment}
-            key={post.id}
+            key={selectedPost.id}
             deleteComment={deleteComment}
           />
-        ))}
+        )}
 
         {isOpenComment && (
           <NewCommentForm onSubmit={onSubmit} selectedPost={selectedPost} />

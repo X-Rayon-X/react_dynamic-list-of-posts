@@ -7,6 +7,7 @@ interface Props {
   isOpenPost: boolean;
   setIsOpenPost: (value: boolean) => void;
   setSelectedPost: (post: Post) => void;
+  loadComments: (postId: number) => void;
 }
 
 export const PostsList: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const PostsList: React.FC<Props> = ({
   isOpenPost,
   setIsOpenPost,
   setSelectedPost,
+  loadComments,
 }) => (
   <div data-cy="PostsList">
     <p className="title">Posts:</p>
@@ -34,6 +36,7 @@ export const PostsList: React.FC<Props> = ({
           isOpenPost={isOpenPost}
           setIsOpenPost={setIsOpenPost}
           setSelectedPost={setSelectedPost}
+          loadComments={loadComments}
           key={post.id}
         />
       ))}

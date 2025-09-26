@@ -7,6 +7,7 @@ interface Props {
   isOpenPost: boolean;
   setIsOpenPost: (value: boolean) => void;
   setSelectedPost: (post: Post) => void;
+  loadComments: (postId: number) => void;
 }
 
 export const PostItem: React.FC<Props> = ({
@@ -14,10 +15,12 @@ export const PostItem: React.FC<Props> = ({
   isOpenPost,
   setIsOpenPost,
   setSelectedPost,
+  loadComments,
 }) => {
   function handleSelect(postTake: Post) {
     setSelectedPost(postTake);
     setIsOpenPost(!isOpenPost);
+    loadComments(postTake.id);
   }
 
   return (

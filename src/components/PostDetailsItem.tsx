@@ -1,11 +1,11 @@
 import React from 'react';
 import { Loader } from './Loader';
-import { Post } from '../types/Post';
 import { LoaderState } from '../types/LoaderState';
 import { Comment } from '../types/Comment';
+import { Post } from '../types/Post';
 
 interface Props {
-  post: Post;
+  selectedPost: Post;
   comments: Comment[];
   loaderComment: LoaderState;
   errorMessageComment: string | null;
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const PostDetailsItem: React.FC<Props> = ({
-  post,
+  selectedPost,
   comments,
   loaderComment,
   errorMessageComment,
@@ -29,9 +29,9 @@ export const PostDetailsItem: React.FC<Props> = ({
   return (
     <>
       <div className="block">
-        <h2 data-cy="PostTitle">{`#${post.id}: ${post.title}`}</h2>
+        <h2 data-cy="PostTitle">{`#${selectedPost.id}: ${selectedPost.title}`}</h2>
 
-        <p data-cy="PostBody">{post.body}</p>
+        <p data-cy="PostBody">{selectedPost.body}</p>
       </div>
       <div className="block">
         {loaderComment === 'loading' && <Loader />}

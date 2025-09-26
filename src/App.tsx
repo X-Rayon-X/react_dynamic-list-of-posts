@@ -98,12 +98,6 @@ export const App = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser]);
-  useEffect(() => {
-    if (selectedPost) {
-      loadComments(selectedPost.id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPost]);
 
   const showNoPosts =
     !errorMessagePost &&
@@ -155,6 +149,7 @@ export const App = () => {
                       isOpenPost={isOpenPost}
                       setIsOpenPost={setIsOpenPost}
                       setSelectedPost={setSelectedPost}
+                      loadComments={loadComments}
                     />
                   )}
               </div>
@@ -174,7 +169,6 @@ export const App = () => {
             <div className="tile is-child box is-success ">
               {isOpenPost && (
                 <PostDetails
-                  posts={posts}
                   comments={comments}
                   loaderComment={loaderComment}
                   errorMessageComment={errorMessageComment}
