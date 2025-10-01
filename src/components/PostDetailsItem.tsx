@@ -48,7 +48,7 @@ export const PostDetailsItem: React.FC<Props> = ({
           </p>
         )}
 
-        {loaderComment === 'loaded' && <p className="title is-4">Comments:</p>}
+        {!errorMessageComment && loaderComment === 'loaded' && <p className="title is-4">Comments:</p>}
 
         {loaderComment === 'loaded' &&
           comments.map((comment: Comment) => (
@@ -78,12 +78,12 @@ export const PostDetailsItem: React.FC<Props> = ({
             </article>
           ))}
 
-        {loaderComment === 'loaded' && !isOpenComment && (
+        {!errorMessageComment && loaderComment === 'loaded' && !isOpenComment && (
           <button
             data-cy="WriteCommentButton"
             type="button"
             className="button is-link"
-            onClick={() => setIsOpenComment(!isOpenComment)}
+            onClick={() => setIsOpenComment(true)}
           >
             Write a comment
           </button>

@@ -1,26 +1,34 @@
 import React from 'react';
 import { Post } from '../types/Post';
 import classNames from 'classnames';
+import { Comment } from '../types/Comment';
 
 interface Props {
   post: Post;
-  isOpenPost: boolean;
-  setIsOpenPost: (value: boolean) => void;
-  setSelectedPost: (post: Post) => void;
+  setSelectedPost: React.Dispatch<React.SetStateAction<Post | null>>;
   loadComments: (postId: number) => void;
+  selectedPost: Post | null;
+  setComments: (comments: Comment[]) => void;
+  setIsOpenComment: (value: boolean) => void;
 }
 
 export const PostItem: React.FC<Props> = ({
   post,
-  isOpenPost,
-  setIsOpenPost,
   setSelectedPost,
   loadComments,
+  selectedPost,
+  setComments,
+  setIsOpenComment,
 }) => {
   function handleSelect(postTake: Post) {
-    setSelectedPost(postTake);
-    setIsOpenPost(!isOpenPost);
-    loadComments(postTake.id);
+    if (selectedPost?.id === postTake.id) {
+      setSelectedPost(null);
+      setComments([]);
+    } else {
+      setSelectedPost(postTake);
+      loadComments(postTake.id);
+      setIsOpenComment(false);
+    }
   }
 
   return (
@@ -35,11 +43,11 @@ export const PostItem: React.FC<Props> = ({
             type="button"
             data-cy="PostButton"
             className={classNames('button is-link', {
-              'is-light': !isOpenPost,
+              'is-light': selectedPost?.id !== post.id,
             })}
             onClick={() => handleSelect(post)}
           >
-            {isOpenPost ? 'Close' : 'Open'}
+            {selectedPost?.id === post.id ? 'Close' : 'Open'}
           </button>
         </td>
       </tr>

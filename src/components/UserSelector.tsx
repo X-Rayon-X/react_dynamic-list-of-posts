@@ -1,28 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { User } from '../types/User';
 import classNames from 'classnames';
+import { Post } from '../types/Post';
 
 interface Props {
   users: User[];
   selectedUser: User | null;
   setSelectedUser: (user: User) => void;
+  setSelectedPost: (post: Post | null) => void;
 }
 
 export const UserSelector: React.FC<Props> = ({
   users,
   selectedUser,
   setSelectedUser,
+  setSelectedPost,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   function handleSelect(user: User) {
     setSelectedUser(user);
+    setSelectedPost(null);
     setIsOpen(false);
   }
+
+  useEffect(() => {
+    const handleBlurDropdown = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleBlurDropdown);
+
+    return () => document.removeEventListener('mousedown', handleBlurDropdown);
+  }, []);
 
   return (
     <div
       data-cy="UserSelector"
+      ref={dropdownRef}
       className={classNames('dropdown', { 'is-active': isOpen })}
     >
       <div className="dropdown-trigger">
@@ -50,7 +71,9 @@ export const UserSelector: React.FC<Props> = ({
           {users.map((user: User) => (
             <a
               href={`#user-${user.id}`}
-              className="dropdown-item"
+              className={classNames('dropdown-item', {
+                'is-active': user.id === selectedUser?.id,
+              })}
               key={user.id}
               onClick={() => handleSelect(user)}
             >

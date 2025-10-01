@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NewCommentForm } from './NewCommentForm';
 import { Post } from '../types/Post';
 import { PostDetailsItem } from './PostDetailsItem';
@@ -17,6 +17,8 @@ interface Props {
   }: Omit<Comment, 'id'>) => Promise<void>;
   selectedPost: Post | null;
   deleteComment: (commentId: number) => Promise<void>;
+  isOpenComment: boolean;
+  setIsOpenComment: (value: boolean) => void;
 }
 
 export const PostDetails: React.FC<Props> = ({
@@ -26,9 +28,9 @@ export const PostDetails: React.FC<Props> = ({
   onSubmit,
   selectedPost,
   deleteComment,
+  isOpenComment,
+  setIsOpenComment,
 }) => {
-  const [isOpenComment, setIsOpenComment] = useState(false);
-
   return (
     <div className="content" data-cy="PostDetails">
       <div className="content" data-cy="PostDetails">
@@ -40,7 +42,6 @@ export const PostDetails: React.FC<Props> = ({
             errorMessageComment={errorMessageComment}
             isOpenComment={isOpenComment}
             setIsOpenComment={setIsOpenComment}
-            key={selectedPost.id}
             deleteComment={deleteComment}
           />
         )}

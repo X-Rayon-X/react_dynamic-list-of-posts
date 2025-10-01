@@ -65,6 +65,12 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
           setBody('');
         });
       }}
+      onReset={() => {
+        setName('');
+        setEmail('');
+        setBody('');
+        setErrors({});
+      }}
     >
       <div className="field" data-cy="NameField">
         <label className="label" htmlFor="comment-author-name">

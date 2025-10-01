@@ -10,7 +10,6 @@ import { PostDetails } from './components/PostDetails';
 import { UserSelector } from './components/UserSelector';
 import { Loader } from './components/Loader';
 import * as usersService from './api/users';
-import * as commentsService from './api/comments';
 import { useEffect, useState } from 'react';
 import { User } from './types/User';
 import { Post } from './types/Post';
@@ -34,7 +33,7 @@ export const App = () => {
     null,
   );
 
-  const [isOpenPost, setIsOpenPost] = useState(false);
+  const [isOpenComment, setIsOpenComment] = useState(false);
 
   function loadUsers() {
     usersService.getUsers().then(usersAPI => setUsers(usersAPI));
@@ -70,8 +69,8 @@ export const App = () => {
   }
 
   function addComment({ postId, name, email, body }: Omit<Comment, 'id'>) {
-    return commentsService
-      .addComment({ postId, name, email, body })
+    return client
+      .post<Comment>('/comments', { postId, name, email, body })
       .then(newComment => {
         setComments(currentComments => [...currentComments, newComment]);
       })
@@ -80,8 +79,8 @@ export const App = () => {
   }
 
   function deleteComment(commentId: number) {
-    return commentsService
-      .deleteComment(commentId)
+    return client
+      .delete(`/comments/${commentId}`)
       .then(() => {
         setComments(currentComments =>
           currentComments.filter(comment => comment.id !== commentId),
@@ -116,6 +115,7 @@ export const App = () => {
                   users={users}
                   selectedUser={selectedUser}
                   setSelectedUser={setSelectedUser}
+                  setSelectedPost={setSelectedPost}
                 />
               </div>
 
@@ -146,10 +146,11 @@ export const App = () => {
                   posts.length > 0 && (
                     <PostsList
                       posts={posts}
-                      isOpenPost={isOpenPost}
-                      setIsOpenPost={setIsOpenPost}
                       setSelectedPost={setSelectedPost}
                       loadComments={loadComments}
+                      selectedPost={selectedPost}
+                      setComments={setComments}
+                      setIsOpenComment={setIsOpenComment}
                     />
                   )}
               </div>
@@ -163,11 +164,11 @@ export const App = () => {
               'is-parent',
               'is-8-desktop',
               'Sidebar',
-              { 'Sidebar--open': isOpenPost },
+              { 'Sidebar--open': selectedPost },
             )}
           >
             <div className="tile is-child box is-success ">
-              {isOpenPost && (
+              {selectedPost && (
                 <PostDetails
                   comments={comments}
                   loaderComment={loaderComment}
@@ -175,6 +176,8 @@ export const App = () => {
                   onSubmit={addComment}
                   selectedPost={selectedPost}
                   deleteComment={deleteComment}
+                  isOpenComment={isOpenComment}
+                  setIsOpenComment={setIsOpenComment}
                 />
               )}
             </div>
