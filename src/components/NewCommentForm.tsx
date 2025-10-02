@@ -17,7 +17,7 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [body, setBody] = useState('');
-  const [isAddLoader, setIsAddLoader] = useState(false);
+  const [isAddLoading, setIsAddLoading] = useState(false);
   const [errors, setErrors] = useState<{
     name?: string;
     email?: string;
@@ -39,7 +39,7 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
           newErrors.name = 'Name is required';
         }
 
-        if (!email.includes('@')) {
+        if (!email.trim() || !email.trim().includes('@')) {
           newErrors.email = 'Email is required';
         }
 
@@ -53,14 +53,14 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
           return;
         }
 
-        setIsAddLoader(true);
+        setIsAddLoading(true);
         onSubmit({
           postId: selectedPost.id,
           name: name,
           email: email,
           body: body,
         }).finally(() => {
-          setIsAddLoader(false);
+          setIsAddLoading(false);
           setErrors({});
           setBody('');
         });
@@ -183,7 +183,7 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
           <button
             type="submit"
             className={classNames('button is-link', {
-              'is-loading': isAddLoader,
+              'is-loading': isAddLoading,
             })}
           >
             Add

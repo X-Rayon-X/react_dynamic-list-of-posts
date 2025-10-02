@@ -32,25 +32,23 @@ export const PostItem: React.FC<Props> = ({
   }
 
   return (
-    <tbody>
-      <tr data-cy="Post">
-        <td data-cy="PostId">{post.id}</td>
+    <tr data-cy="Post">
+      <td data-cy="PostId">{post.id}</td>
 
-        <td data-cy="PostTitle">{post.title}</td>
+      <td data-cy="PostTitle">{post.title}</td>
 
-        <td className="has-text-right is-vcentered">
-          <button
-            type="button"
-            data-cy="PostButton"
-            className={classNames('button is-link', {
-              'is-light': selectedPost?.id !== post.id,
-            })}
-            onClick={() => handleSelect(post)}
-          >
-            {selectedPost?.id === post.id ? 'Close' : 'Open'}
-          </button>
-        </td>
-      </tr>
-    </tbody>
+      <td className="has-text-right is-vcentered">
+        <button
+          type="button"
+          data-cy="PostButton"
+          className={classNames('button is-link', {
+            'is-light': selectedPost?.id !== post.id,
+          })}
+          onClick={() => handleSelect(post)}
+        >
+          {selectedPost?.id === post.id ? 'Close' : 'Open'}
+        </button>
+      </td>
+    </tr>
   );
 };

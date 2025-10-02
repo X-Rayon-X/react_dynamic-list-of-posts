@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { User } from '../types/User';
 import classNames from 'classnames';
 import { Post } from '../types/Post';
@@ -25,26 +25,19 @@ export const UserSelector: React.FC<Props> = ({
     setIsOpen(false);
   }
 
-  useEffect(() => {
-    const handleBlurDropdown = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleBlurDropdown);
-
-    return () => document.removeEventListener('mousedown', handleBlurDropdown);
-  }, []);
-
   return (
     <div
       data-cy="UserSelector"
       ref={dropdownRef}
       className={classNames('dropdown', { 'is-active': isOpen })}
+      tabIndex={0}
+      onBlur={e => {
+        const next = e.relatedTarget as Node | null;
+
+        if (!dropdownRef.current?.contains(next)) {
+          setIsOpen(false);
+        }
+      }}
     >
       <div className="dropdown-trigger">
         <button
@@ -52,7 +45,7 @@ export const UserSelector: React.FC<Props> = ({
           className="button"
           aria-haspopup="true"
           aria-controls="dropdown-menu"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpen(prev => !prev)}
         >
           {selectedUser ? (
             <span>{selectedUser.name}</span>

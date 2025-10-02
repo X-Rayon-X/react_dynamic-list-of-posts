@@ -79,6 +79,8 @@ export const App = () => {
   }
 
   function deleteComment(commentId: number) {
+    setComments(prev => prev.filter(c => c.id !== commentId));
+
     return client
       .delete(`/comments/${commentId}`)
       .then(() => {
@@ -86,7 +88,7 @@ export const App = () => {
           currentComments.filter(comment => comment.id !== commentId),
         );
       })
-      .catch(() => {})
+      .catch(() => setComments(comments))
       .finally(() => {});
   }
 

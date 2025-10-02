@@ -33,17 +33,19 @@ export const PostsList: React.FC<Props> = ({
         </tr>
       </thead>
 
-      {posts.map(post => (
-        <PostItem
-          post={post}
-          setSelectedPost={setSelectedPost}
-          loadComments={loadComments}
-          selectedPost={selectedPost}
-          setComments={setComments}
-          setIsOpenComment={setIsOpenComment}
-          key={post.id}
-        />
-      ))}
+      <tbody>
+        {posts.map(post => (
+          <PostItem
+            post={post}
+            setSelectedPost={setSelectedPost}
+            loadComments={loadComments}
+            selectedPost={selectedPost}
+            setComments={setComments}
+            setIsOpenComment={setIsOpenComment}
+            key={post.id}
+          />
+        ))}
+      </tbody>
     </table>
   </div>
 );
